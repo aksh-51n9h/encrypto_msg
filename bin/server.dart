@@ -1,34 +1,49 @@
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:args/args.dart';
-import 'package:shelf/shelf.dart' as shelf;
-import 'package:shelf/shelf_io.dart' as io;
+void main() async {
+  var address = InternetAddress.loopbackIPv4;
+  var port = 4042;
 
-// For Google Cloud Run, set _hostname to '0.0.0.0'.
-const _hostname = 'localhost';
+  try {
+    var server = await HttpServer.bind(address, port);
 
-void main(List<String> args) async {
-  var parser = ArgParser()..addOption('port', abbr: 'p');
-  var result = parser.parse(args);
+    print('Sever started at ${server.address.address}:${server.port}');
 
-  // For Google Cloud Run, we respect the PORT environment variable
-  var portStr = result['port'] ?? Platform.environment['PORT'] ?? '8080';
-  var port = int.tryParse(portStr);
+    server.listen(
+      (HttpRequest request) async {
+        var webSocket = await WebSocketTransformer.upgrade(request);
 
-  if (port == null) {
-    stdout.writeln('Could not parse port value "$portStr" into a number.');
-    // 64: command line usage error
-    exitCode = 64;
-    return;
+        // ignore: prefer_single_quotes
+        print("Incoming request from ${request.connectionInfo.remoteAddress}");
+
+        webSocket.listen(
+          (data) {
+            print(
+                'Request from ${request?.connectionInfo?.remoteAddress}  --> ${data}');
+          },
+        );
+
+        stdin.listen(
+          (data) {
+            webSocket.add('${utf8.decode(data)}');
+          },
+          onDone: () {
+            print('Input stream closed.');
+          },
+          onError: (error) {
+            // ignore: prefer_single_quotes
+            print("Input stream error occurred. Error : ${error}");
+          },
+          cancelOnError: false,
+        );
+      },
+    );
+  } catch (error) {
+    print('${error}');
   }
-
-  var handler = const shelf.Pipeline()
-      .addMiddleware(shelf.logRequests())
-      .addHandler(_echoRequest);
-
-  var server = await io.serve(handler, _hostname, port);
-  print('Serving at http://${server.address.host}:${server.port}');
 }
 
-shelf.Response _echoRequest(shelf.Request request) =>
-    shelf.Response.ok('Request for "${request.url}"');
+String readLine() {
+  return stdin.readLineSync();
+}
