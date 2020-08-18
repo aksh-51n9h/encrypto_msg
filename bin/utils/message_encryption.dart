@@ -16,7 +16,7 @@ class MessageEncryption {
     publicKey = _getPublicKey(p, q);
     privateKey = _getPrivateKey(p, q);
 
-    print(privateKey);
+    print('Public key : $publicKey');
   }
 
   List<BigInt> _getRandomPrimes() {
@@ -40,8 +40,6 @@ class MessageEncryption {
         primeNumbers.add(number);
       }
     }
-
-    print(primeNumbers);
 
     return primeNumbers;
   }

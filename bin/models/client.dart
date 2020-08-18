@@ -1,7 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
-class Client {
+import '../utils/message_encryption.dart';
+import 'client_api.dart';
+
+class Client implements ClientAPI {
   WebSocket _socket;
+  MessageEncryption _messageEncryption;
 
   Client() {
     _initialize();
@@ -16,6 +21,8 @@ class Client {
 
         await _addListener();
       }
+
+      _messageEncryption = MessageEncryption();
     } catch (error) {
       print('Some error has occured! ERROR:$error');
     }
@@ -45,5 +52,16 @@ class Client {
     print('Some error has occured! Now connection will be closed.');
     print('ERROR:$error');
     _closeConnection();
+  }
+
+  @override
+  void sendMessage(String message) {
+    var encodeList = utf8.encode(message);
+    _socket.add(encodeList);
+  }
+
+  @override
+  List<BigInt> getPublicKey() {
+    return _messageEncryption.publicKey;
   }
 }

@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'models/key_pair_exchange_message.dart';
+import 'models/message.dart';
+
 void main() async {
   var address = InternetAddress.loopbackIPv4;
   var port = 4042;
@@ -20,7 +23,17 @@ void main() async {
         webSocket.listen(
           (data) {
             print(
-                'Request from ${request?.connectionInfo?.remoteAddress}  --> ${data}');
+                'Request from ${request?.connectionInfo?.remoteAddress}  --> ${utf8.decode(data)}');
+
+            var json = jsonDecode(utf8.decode(data));
+
+            var message = Message.fromJson(json);
+
+            if (message.type == MessageType.keyPairExchange) {
+              var clientPublicKeyPair = KeyPairExchangeMessage.fromJson(json);
+
+              print(clientPublicKeyPair.toJson());
+            }
           },
         );
 
