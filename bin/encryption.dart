@@ -24,7 +24,7 @@ void main() {
       .map((element) => BigInt.from(pow(element, e) % n))
       .toList();
 
-  var encryptedList = temp.map((e) => e.toInt()%125).toList();
+  var encryptedList = temp.map((e) => e.toInt() % 128).toList();
 
   print(encryptedList);
   var encryptedMessage = asciiCodec.decode(encryptedList);
