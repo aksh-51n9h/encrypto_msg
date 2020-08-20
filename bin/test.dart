@@ -1,7 +1,6 @@
-import 'dart:convert';
+import 'dart:math';
+import 'dart:core';
 
-void main() {
-  var intList = List.generate(128, (index) => index);
+const PARTS = 16;
 
-  print(utf8.decode(intList));
-}
+void main() {}

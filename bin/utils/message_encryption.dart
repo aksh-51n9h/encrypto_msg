@@ -3,45 +3,22 @@ import 'dart:io';
 
 import 'dart:math';
 
+import 'prime_generator.dart';
+
 class MessageEncryption {
   List<BigInt> privateKey;
   List<BigInt> publicKey;
 
   MessageEncryption() {
-    var primes = _getRandomPrimes();
+    var p = getPrimeNumber();
+    var q = getPrimeNumber();
 
-    var p = primes[0];
-    var q = primes[1];
+    print('$p $q');
 
     publicKey = _getPublicKey(p, q);
     privateKey = _getPrivateKey(p, q);
 
-    print('Public key : $publicKey');
-  }
-
-  List<BigInt> _getRandomPrimes() {
-    // var file = File('./bin/utils/primes.txt');
-    var file = File('primes.txt');
-
-    var primes = file.readAsStringSync();
-
-    var primeList =
-        primes.split(',').map((e) => BigInt.from(int.parse(e))).toList();
-
-    var primeNumbers = <BigInt>[];
-
-    while (primeNumbers.length != 2) {
-      var number = primeList[Random().nextInt(primeList.length ~/ 2)];
-      if (primeNumbers.isEmpty) {
-        primeNumbers.add(number);
-      }
-
-      if (primeNumbers[0] != number) {
-        primeNumbers.add(number);
-      }
-    }
-
-    return primeNumbers;
+    // print('Public key : $publicKey');
   }
 
   BigInt _getN(BigInt p, BigInt q) {
@@ -53,11 +30,7 @@ class MessageEncryption {
   }
 
   BigInt _gcd(BigInt p, BigInt q) {
-    if (q == BigInt.zero) {
-      return p;
-    }
-
-    return _gcd(q, p % q);
+    return p.gcd(q);
   }
 
   Iterable<BigInt> get positiveIntegers sync* {

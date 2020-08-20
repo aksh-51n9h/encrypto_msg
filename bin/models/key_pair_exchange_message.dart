@@ -8,7 +8,10 @@ class KeyPairExchangeMessage extends Message {
   factory KeyPairExchangeMessage.fromJson(dynamic json) {
     return KeyPairExchangeMessage(
       type: MessageType.values[json['type']],
-      keyPair: [BigInt.zero, BigInt.zero],
+      keyPair: [
+        BigInt.parse(json['0'], radix: 10),
+        BigInt.parse(json['1'], radix: 10),
+      ],
     );
   }
 
