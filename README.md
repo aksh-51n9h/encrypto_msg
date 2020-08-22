@@ -2,6 +2,13 @@
 - Encrypted web socket terminal messaging implemented using dart-lang.
 - RSA encryption and AES encryption algorithms are used for encryption.
 
+## Task list :
+- [X] Implemented simple web socket.
+- [X] Large prime generator implemented.
+- [ ] RSA algorithm implementation.
+- [ ] AES algorithm implementation.
+- [ ] Encrypted terminal messaging.
+
 ### Screenshots : 
 - work in progress
 
@@ -10,13 +17,13 @@
 #### Server side implementation :
 1. Add shelf package in your project.
   * Add this to your package's **pubspec.yaml** file.
-  ```
+  ```yaml
   dependencies:
     shelf: ^0.7.9
   ```
   
  2. Create web server in **main.dart** file.
- ```
+ ```dart
  void main() async{
   var address = InternetAddress.loopbackIPv4;
   var port = 4042;
@@ -28,7 +35,7 @@
  ```
  
  3. Add request listener to it.
- ```
+ ```dart
  server.listen(
   (HttpRequest request) async {
     print("Incoming request from ${request.connectionInfo.remoteAddress}");
@@ -36,12 +43,12 @@
  ```
  
  4. Upgrade http request to web socket.
- ```
+ ```dart
  var webSocket = await WebSocketTransformer.upgrade(request);
  ```
  
  5. Add web socket request listener.
- ```
+ ```dart
  webSocket.listen(
   (data) {
     print('Request from ${request?.connectionInfo?.remoteAddress}  --> ${utf8.decode(data)}');      
@@ -52,14 +59,14 @@
  
 #### Client side implementation :
 1. Create another file **client.dart**.
-```
+```dart
  void main() async{
   var webSocket = await WebSocket.connect('ws://127.0.0.1:4042');
  }
 ```
 
 2. Add handler to it.
- ```
+ ```dart
  webSocket.listen(
   (data) {
     print('Message received --> ${utf8.decode(data)}');      
@@ -69,7 +76,7 @@
  ```
  
  3. Use **send** method to send message to server.
- ```
+ ```dart
   webSocket.send('Hello World!');
  ```
  _Message will be send in the form of utf encodes list._
